@@ -1,6 +1,8 @@
 from dahua.client import DahuaRpc
 
-users_to_delete = ["admln"]
+users_to_delete = [
+    "admln"
+]
 
 dahua = DahuaRpc("172.20.10.254", 80)
 dahua.login("admin", "q1w2e3r4")

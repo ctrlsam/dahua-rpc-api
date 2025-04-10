@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dahua-rpc-api"
-version = "0.1.0"
+version = "0.1.2"
 description = "A Python package for interacting with the Dahua RPC API."
 readme = "README.md"
 requires-python = ">=3.7"
@@ -15,14 +15,14 @@ authors = [
 dependencies = [
   "requests>=2.32.3",
 ]
-
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dahua*"]
+
 [tool.setuptools]
-# Tells setuptools where to find your package modules. Since your project files are in a folder named `dahua`,
-# this configuration tells the build system to use that folder as the package.
-packages = ["dahua"]

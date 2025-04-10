@@ -15,7 +15,7 @@ If you prefer to install from source, follow these steps:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/dahua-rpc-api.git
+   git clone https://github.com/ctrlsam/dahua-rpc-api.git
    ```
 
 2. **Navigate to the project directory:**

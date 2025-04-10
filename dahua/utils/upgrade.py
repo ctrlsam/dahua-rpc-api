@@ -9,7 +9,7 @@ from dahua.utils.logger import logger
 class Upgrade:
     client: "DahuaRpc"
 
-    def upgrade(self, firmware_path: str) -> None:
+    def upgrade(self, firmware_path: str) -> bool:
         """Upgrade the firmware of the device."""
         logger.info("Starting firmware upgrade...")
 
@@ -17,14 +17,15 @@ class Upgrade:
         logger.info("Uploading firmware")
         if not self._upload_firmware(firmware_path):
             logger.error("Failed to upload firmware.")
-            return
+            return False
 
         # Check upgrade progress
         if not self._check_progress():
             logger.error("Upgrade failed")
-            return
+            return False
 
         logger.info("Firmware upgrade completed successfully.")
+        return True
 
     def _upload_firmware(self, firmware_path: str) -> bool:
         cookies = {"DWebClientSessionID": self.client.session_id}
