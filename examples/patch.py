@@ -3,9 +3,23 @@ from dahua.client import DahuaRpc
 from dahua.utils.upgrade import Upgrade
 
 
-def main(client: DahuaRpc, firmware_path: str):
-    upgrader = Upgrade(client)
-    upgrader.upgrade(firmware_path=firmware_path)
+def main(args) -> None:
+    dahua = DahuaRpc(host=args.host, port=args.port)
+
+    # Login to the Dahua device
+    print(f"Connecting to {args.host}:{args.port}...")
+    dahua.login(username=args.username, password=args.password)
+
+    # Start the upgrade process
+    upgrader = Upgrade(client=dahua)
+    upgrader.upgrade(
+        firmware_path=args.firmware_file,
+        backup_settings=args.backup,
+        backup_path=args.backup_path,
+    )
+
+    dahua.logout()
+    print("Done.")
 
 
 if __name__ == "__main__":
@@ -24,25 +38,20 @@ if __name__ == "__main__":
         "-p", "--password", type=str, required=True, help="Password for authentication"
     )
     argparse.add_argument(
-        "-host", "--host", type=str, required=True, help="Host address of the device"
+        "--host", type=str, required=True, help="Host address of the device"
     )
     argparse.add_argument(
-        "-port", "--port", type=int, default=80, help="Port number of the device"
+        "--port", type=int, default=80, help="Port number of the device"
+    )
+    argparse.add_argument(
+        "--backup", type=bool, default=True, help="Backup settings before upgrade"
+    )
+    argparse.add_argument(
+        "--backup-path",
+        type=str,
+        default="/tmp/dahua/configFileExport.backup",
+        help="Path to save the backup file",
     )
 
     args = argparse.parse_args()
-
-    # Create a DahuaRpc client instance
-    client = DahuaRpc(
-        host=args.host,
-        port=args.port,
-    )
-
-    print(f"Connecting to {args.host}:{args.port}...")
-    client.login(username=args.username, password=args.password)
-
-    # Perform the firmware upgrade
-    main(client, args.firmware_file)
-
-    client.logout()
-    print("Done.")
+    main(args)
