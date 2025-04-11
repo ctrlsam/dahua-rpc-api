@@ -20,14 +20,15 @@ jobs:
 
       - name: Extract version from tag
         run: |
-          # "refs/tags/v0.1.3" -> "v0.1.3"
-          # Then remove a leading 'v' to get "0.1.3"
-          echo "TAG_VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "TAG_VERSION_CLEAN=${GITHUB_REF##*/#v}" >> $GITHUB_ENV
+          # $GITHUB_REF might look like "refs/tags/v0.2.1"
+          # so remove the "refs/tags/v" prefix and keep only "0.2.1"
+          CLEAN_VERSION="${GITHUB_REF#refs/tags/v}"
+          echo "CLEAN_VERSION=$CLEAN_VERSION" >> $GITHUB_ENV
+
 
       - name: Build the package
         env:
-          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ env.TAG_VERSION_CLEAN }}
+          SETUPTOOLS_SCM_PRETEND_VERSION: ${{ env.CLEAN_VERSION }}
         run: |
           pip install build setuptools_scm
           python -m build
