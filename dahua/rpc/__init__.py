@@ -1,9 +1,9 @@
-from typing import Any, TypedDict
-from dahua.exceptions import DahuaRequestError, DahuaMethodNotSupported
+from typing import Any
 
+from typing import TYPE_CHECKING
 
-class ListMethodResponse(TypedDict):
-    method: list[str]
+if TYPE_CHECKING:
+    from dahua.client import DahuaRpc
 
 
 class RPC:
@@ -13,15 +13,12 @@ class RPC:
 
     def _send(self, function: str, **kwargs) -> dict[str, Any]:
         """Send a request to the camera."""
-        return self.client._request(method=f"{self.parent}.{function}", **kwargs)
+        return self.client.request_json(method=f"{self.parent}.{function}", **kwargs)
 
     # ========================================
     # Common Methods
     # ========================================
 
-    def list_method(self) -> ListMethodResponse:
+    def list_method(self) -> list[str]:
         """Lists all methods of RPC function"""
-        try:
-            return self._send(function="listMethod").get("params")
-        except DahuaRequestError as e:
-            raise DahuaMethodNotSupported from e
+        return self._send(function="listMethod").get("params", {}).get("method")

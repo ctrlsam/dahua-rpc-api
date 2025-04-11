@@ -1,26 +1,79 @@
+from dahua.utils.logger import logger
+
+
 class DahuaRequestError(Exception):
     """Exception raised for request errors."""
 
 
-class DahuaMethodNotSupported(Exception):
-    """Methods that a function parent does not support"""
+# ========== Dahua Request Errors ==========
+class DahuaErrorCodeNotSet(DahuaRequestError):
+    """Error code not set."""
 
 
-def code_to_error(code: int):
-    """
-    ERROR_CODE_NOT_SET = 268959743,
-    INTERFACE_NOT_FOUND = 268632064,
-    METHOD_NOT_FOUND = 268894210,
-    REQUEST_INVALID = 268894209,
-    REQUEST_INVALID_PARAM = 268894211,
-    SESSION_INVALID = 28763750,
+class DahuaInterfaceNotFound(DahuaRequestError):
+    """Interface not found."""
 
-    USER_NOT_VALID = 268632070,
-    PASSWORD_NOT_VALID = 268632071,
-    IN_BLACK_LIST = 268632073,
-    HAS_BEEN_USED = 268632074,
-    HAS_BEEN_LOCKED = 268632081,
 
-    BUSY = 268632075,
-    """
-    # TODO create exceptions for each and map
+class DahuaMethodNotFound(DahuaRequestError):
+    """Method not found."""
+
+
+class DahuaRequestInvalid(DahuaRequestError):
+    """Request invalid."""
+
+
+class DahuaRequestInvalidParam(DahuaRequestError):
+    """Request invalid parameter."""
+
+
+class DahuaSessionInvalid(DahuaRequestError):
+    """Session invalid."""
+
+
+class DahuaInvalidCredentials(DahuaRequestError):
+    """User or password not valid."""
+
+
+class DahuaInBlackList(DahuaRequestError):
+    """User in black list."""
+
+
+class DahuaHasBeenUsed(DahuaRequestError):
+    """User has been used."""
+
+
+class DahuaHasBeenLocked(DahuaRequestError):
+    """User has been locked."""
+
+
+class DahuaBusy(DahuaRequestError):
+    """Device is busy."""
+
+
+def code_to_exception(code: int) -> type[DahuaRequestError]:
+    """Convert error code to exception class."""
+    if code == 268632085:
+        return DahuaInvalidCredentials
+    if code == 268632081:
+        return DahuaHasBeenLocked
+    if code == 268959743:
+        return DahuaErrorCodeNotSet
+    if code == 268632064:
+        return DahuaInterfaceNotFound
+    if code == 268894210:
+        return DahuaMethodNotFound
+    if code == 268894209:
+        return DahuaRequestInvalid
+    if code == 268894211:
+        return DahuaRequestInvalidParam
+    if code == 28763750:
+        return DahuaSessionInvalid
+    if code == 268632073:
+        return DahuaInBlackList
+    if code == 268632074:
+        return DahuaHasBeenUsed
+    if code == 268632075:
+        return DahuaBusy
+
+    logger.warning(f"Unknown error code: {code}")
+    return DahuaRequestError

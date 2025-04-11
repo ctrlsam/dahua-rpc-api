@@ -1,5 +1,11 @@
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 from dahua.rpc import RPC
+
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dahua.client import DahuaRpc
 
 
 class LoginParams(TypedDict):
@@ -8,8 +14,8 @@ class LoginParams(TypedDict):
     userName: str
     password: str
     clientType: str
-    authorityType: str
-    passwordType: str
+    authorityType: NotRequired[str]
+    passwordType: NotRequired[str]
 
 
 class GlobalRPC(RPC):

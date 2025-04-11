@@ -2,7 +2,7 @@ from dahua.client import DahuaRpc
 from dahua.utils.logger import logger
 
 
-def bypass_cve2021_33044(client: DahuaRpc) -> bool:
+def bypass_cve2021_33044(client: DahuaRpc) -> None:
     """Bypass login with CVE-2021-33044."""
     logger.info("Authentication Bypassing (CVE-2021-33044)...")
 

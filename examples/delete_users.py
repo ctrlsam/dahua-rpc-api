@@ -1,13 +1,12 @@
 from dahua.client import DahuaRpc
 
-users_to_delete = [
-    "admln"
-]
+USERS_TO_DELETE = ["admln"]
 
 dahua = DahuaRpc("172.20.10.254", 80)
+
 dahua.login("admin", "q1w2e3r4")
 
-for user in users_to_delete:
+for user in USERS_TO_DELETE:
     try:
         dahua.user_manager.delete_user(user)
         print(f"Deleted user: {user}")

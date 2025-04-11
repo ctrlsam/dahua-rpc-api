@@ -2,12 +2,18 @@ from typing import Any
 from dahua.rpc import RPC
 
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dahua.client import DahuaRpc
+
+
 class UserManagerRPC(RPC):
     def __init__(self, client: "DahuaRpc"):
         super().__init__(client=client, parent="userManager")
 
     def get_user_info_all(self) -> dict[str, Any]:
-        '''
+        """
         TODO: add type annotations to return value
         {
             "Anonymous": false,
@@ -25,7 +31,7 @@ class UserManagerRPC(RPC):
             "Reserved": true,
             "Sharable": true
         }
-        '''
+        """
         return self._send(function="getUserInfoAll").get("params", {}).get("users", {})
 
     def get_active_user_info_all(self) -> dict[str, Any]:
@@ -36,4 +42,4 @@ class UserManagerRPC(RPC):
         )
 
     def delete_user(self, name: str) -> None:
-        return self._send(function="deleteUser", params={"name": name})
+        self._send(function="deleteUser", params={"name": name})

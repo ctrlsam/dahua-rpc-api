@@ -1,6 +1,12 @@
 from dahua.rpc import RPC
 
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from dahua.client import DahuaRpc
+
+
 class MagicBoxRPC(RPC):
     def __init__(self, client: "DahuaRpc") -> None:
         super().__init__(client=client, parent="magicBox")
@@ -19,5 +25,5 @@ class MagicBoxRPC(RPC):
         """Get the serial number of the MagicBox."""
         return self._send(function="getSerialNo").get("params", {}).get("sn")
 
-    def reboot(self) -> str:
-        return self._send(function="reboot")
+    def reboot(self) -> None:
+        self._send(function="reboot")
