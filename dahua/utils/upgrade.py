@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from dahua.client import DahuaRpc
 from dahua.utils.logger import logger
+from dahua.exceptions import DahuaRequestError
 
 
 @dataclass
@@ -14,10 +15,13 @@ class Upgrade:
         self,
         firmware_path: str,
         backup_settings=True,
-        backup_path: str = "/tmp/dahua/configFileExport.backup",
+        backup_path: str | None = None,
     ) -> bool:
         """Upgrade the firmware of the device."""
         logger.info("Starting firmware upgrade...")
+
+        if not backup_path:
+            backup_path = f"/tmp/dahua/{self.client.host}_{self.client.port}_configFileExport.backup"
 
         if backup_settings:
             # Backup settings before upgrade
@@ -63,17 +67,29 @@ class Upgrade:
             response = self.client.request(
                 endpoint="RPC2_Upgrade", files=files, cookies=cookies
             )
+            logger.debug(f"Firmware upload response: {response.text}")
             return "sonia upgrade successfully" in response.text
 
-    def _check_progress(self) -> bool:
+    def _check_progress(self, max_checks=100) -> bool:
         state = "Upgrading"
+        checks = 0
 
-        while state == "Upgrading":
-            update = self.client.upgrader.get_state()
-            state = update.get("State")
+        while state == "Upgrading" and checks < max_checks:
+            try:
+                # Check upgrade progress
+                logger.debug("Checking upgrade progress...")
+                update = self.client.upgrader.get_state()
+                state = update.get("State")
 
-            logger.info(f"Upgrade progress: {update.get('Progress')}%")
-            logger.debug(f"Upgrade state: {update}")
-            sleep(5)
+                logger.info(f"Upgrade progress: {update.get('Progress')}%")
+                logger.debug(f"Upgrade state: {update}")
+                sleep(5)
+            except DahuaRequestError as e:
+                logger.error(f"Error checking upgrade progress: {e}")
+
+            checks += 1
+            if checks >= max_checks:
+                logger.error("Max checks reached. Upgrade may be stuck.")
+                return False
 
         return state != "Invalid"
